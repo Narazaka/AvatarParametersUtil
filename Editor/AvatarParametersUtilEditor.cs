@@ -105,7 +105,7 @@ namespace Narazaka.VRChat.AvatarParametersUtil.Editor
 
         VRCAvatarDescriptor GetParentAvatar()
         {
-            return (SerializedObject.targetObject as Component).GetComponentInParent<VRCAvatarDescriptor>();
+            return (SerializedObject.targetObject as Component)?.GetComponentInParent<VRCAvatarDescriptor>();
         }
     }
 }

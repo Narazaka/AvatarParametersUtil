@@ -140,7 +140,7 @@ namespace Narazaka.VRChat.AvatarParametersUtil
             return providers.SelectMany(provider => provider.GetParameterNameAndTypes());
         }
 
-
+#if UNITY_EDITOR
         public static AnimatorControllerParameterType ToAnimatorControllerParameterType(this VRCExpressionParameters.ValueType valueType)
         {
             switch (valueType)
@@ -196,5 +196,6 @@ namespace Narazaka.VRChat.AvatarParametersUtil
                 networkSynced = false,
             };
         }
+#endif
     }
 }

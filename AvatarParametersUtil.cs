@@ -4,6 +4,8 @@ using UnityEngine;
 using VRC.SDK3.Avatars.Components;
 using VRC.SDK3.Avatars.ScriptableObjects;
 using VRC.SDK3.Dynamics.Contact.Components;
+using VRC.SDK3.Dynamics.PhysBone.Components;
+
 #if AVATAR_PARAMETERS_UTIL_HAS_MA
 using nadena.dev.modular_avatar.core;
 #endif
@@ -38,6 +40,7 @@ namespace Narazaka.VRChat.AvatarParametersUtil
 #if AVATAR_PARAMETERS_UTIL_HAS_MA
             parameters = parameters.Concat(GetModularAvatarParameters(avatar));
 #endif
+            parameters = parameters.Concat(GetVRCPhysBoneParameters(avatar));
             parameters = parameters.Concat(GetVRCContactReceiverParameters(avatar));
             parameters = parameters.Concat(GetParameterNameAndTypesProvider(avatar));
 
@@ -74,6 +77,53 @@ namespace Narazaka.VRChat.AvatarParametersUtil
                     );
         }
 #endif
+
+        public static IEnumerable<VRCExpressionParameters.Parameter> GetVRCPhysBoneParameters(VRCAvatarDescriptor avatar)
+        {
+            return avatar.GetComponentsInChildren<VRCPhysBone>().SelectMany(ToVRCExpressionParametersParameters);
+        }
+
+        public static IEnumerable<VRCExpressionParameters.Parameter> ToVRCExpressionParametersParameters(this VRCPhysBone physBone)
+        {
+            if (string.IsNullOrEmpty(physBone.parameter)) return Enumerable.Empty<VRCExpressionParameters.Parameter>();
+            return new VRCExpressionParameters.Parameter[] {
+                new VRCExpressionParameters.Parameter {
+                    name = $"{physBone.parameter}_IsGrabbed",
+                    valueType = VRCExpressionParameters.ValueType.Bool,
+                    saved = false,
+                    defaultValue = 0f,
+                    networkSynced = false,
+                },
+                new VRCExpressionParameters.Parameter {
+                    name = $"{physBone.parameter}_IsPosed",
+                    valueType = VRCExpressionParameters.ValueType.Bool,
+                    saved = false,
+                    defaultValue = 0f,
+                    networkSynced = false,
+                },
+                new VRCExpressionParameters.Parameter {
+                    name = $"{physBone.parameter}_Angle",
+                    valueType = VRCExpressionParameters.ValueType.Float,
+                    saved = false,
+                    defaultValue = 0f,
+                    networkSynced = false,
+                },
+                new VRCExpressionParameters.Parameter {
+                    name = $"{physBone.parameter}_Stretch",
+                    valueType = VRCExpressionParameters.ValueType.Float,
+                    saved = false,
+                    defaultValue = 0f,
+                    networkSynced = false,
+                },
+                new VRCExpressionParameters.Parameter {
+                    name = $"{physBone.parameter}_Squish",
+                    valueType = VRCExpressionParameters.ValueType.Float,
+                    saved = false,
+                    defaultValue = 0f,
+                    networkSynced = false,
+                },
+            };
+        }
 
         public static IEnumerable<VRCExpressionParameters.Parameter> GetVRCContactReceiverParameters(VRCAvatarDescriptor avatar)
         {

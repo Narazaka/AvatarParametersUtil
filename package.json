@@ -1,6 +1,6 @@
 {
   "name": "net.narazaka.vrchat.avatar-parameters-util",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "displayName": "Avatar Parameters Util",
   "description": "VRC Expressions Parameter Utility",
   "author": {
@@ -9,5 +9,6 @@
   },
   "license": "Zlib",
   "type": "tool",
-  "url" : "https://github.com/Narazaka/AvatarParametersUtil.git"
+  "url" : "https://github.com/Narazaka/AvatarParametersUtil.git",
+  "unity": "2019.4"
 }

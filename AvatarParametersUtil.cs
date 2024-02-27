@@ -68,7 +68,7 @@ namespace Narazaka.VRChat.AvatarParametersUtil
                     .Where(p => p.syncType != ParameterSyncType.NotSynced)
                     .Select(p => new VRCExpressionParameters.Parameter
                     {
-                        name = p.nameOrPrefix,
+                        name = string.IsNullOrWhiteSpace(p.remapTo) ? p.nameOrPrefix : p.remapTo,
                         valueType = p.syncType == ParameterSyncType.Bool ? VRCExpressionParameters.ValueType.Bool : p.syncType == ParameterSyncType.Int ? VRCExpressionParameters.ValueType.Int : VRCExpressionParameters.ValueType.Float,
                         saved = p.saved,
                         defaultValue = p.defaultValue,

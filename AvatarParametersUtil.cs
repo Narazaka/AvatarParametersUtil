@@ -60,7 +60,7 @@ namespace Narazaka.VRChat.AvatarParametersUtil
 #if AVATAR_PARAMETERS_UTIL_HAS_MA
         public static IEnumerable<VRCExpressionParameters.Parameter> GetModularAvatarParameters(VRCAvatarDescriptor avatar)
         {
-            var maParameters = avatar.GetComponentsInChildren<ModularAvatarParameters>();
+            var maParameters = avatar.GetAllComponentsInChildren<ModularAvatarParameters>();
             return maParameters
                 .Where(map => map.parameters != null)
                 .SelectMany(maParameter => maParameter
@@ -80,7 +80,7 @@ namespace Narazaka.VRChat.AvatarParametersUtil
 
         public static IEnumerable<VRCExpressionParameters.Parameter> GetVRCPhysBoneParameters(VRCAvatarDescriptor avatar)
         {
-            return avatar.GetComponentsInChildren<VRCPhysBone>().SelectMany(ToVRCExpressionParametersParameters);
+            return avatar.GetAllComponentsInChildren<VRCPhysBone>().SelectMany(ToVRCExpressionParametersParameters);
         }
 
         public static IEnumerable<VRCExpressionParameters.Parameter> ToVRCExpressionParametersParameters(this VRCPhysBone physBone)
@@ -127,7 +127,7 @@ namespace Narazaka.VRChat.AvatarParametersUtil
 
         public static IEnumerable<VRCExpressionParameters.Parameter> GetVRCContactReceiverParameters(VRCAvatarDescriptor avatar)
         {
-            var receivers = avatar.GetComponentsInChildren<VRCContactReceiver>();
+            var receivers = avatar.GetAllComponentsInChildren<VRCContactReceiver>();
             foreach (var receiver in receivers)
             {
                 yield return receiver.ToVRCExpressionParametersParameter();
@@ -171,7 +171,7 @@ namespace Narazaka.VRChat.AvatarParametersUtil
 #if AVATAR_PARAMETERS_UTIL_HAS_MA
         public static IEnumerable<VRCExpressionParameters.Parameter> GetModularAvatarAnimatorControllerParameters(VRCAvatarDescriptor avatar)
         {
-            var maMergeAnimators = avatar.GetComponentsInChildren<ModularAvatarMergeAnimator>();
+            var maMergeAnimators = avatar.GetAllComponentsInChildren<ModularAvatarMergeAnimator>();
             return maMergeAnimators.Select(ma => ma.animator).Where(ac => ac != null).SelectMany(GetAnimatorControllerParameters);
         }
 #endif
@@ -186,7 +186,7 @@ namespace Narazaka.VRChat.AvatarParametersUtil
 
         public static IEnumerable<VRCExpressionParameters.Parameter> GetParameterNameAndTypesProvider(VRCAvatarDescriptor avatar)
         {
-            var providers = avatar.GetComponentsInChildren<IParameterNameAndTypesProvider>();
+            var providers = avatar.GetAllComponentsInChildren<IParameterNameAndTypesProvider>();
             return providers.SelectMany(provider => provider.GetParameterNameAndTypes());
         }
 
@@ -247,5 +247,9 @@ namespace Narazaka.VRChat.AvatarParametersUtil
             };
         }
 #endif
+        static T[] GetAllComponentsInChildren<T>(this Component component)
+        {
+            return component.GetComponentsInChildren<T>(true);
+        }
     }
 }

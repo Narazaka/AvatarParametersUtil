@@ -42,7 +42,6 @@ namespace Narazaka.VRChat.AvatarParametersUtil
 #endif
             parameters = parameters.Concat(GetVRCPhysBoneParameters(avatar));
             parameters = parameters.Concat(GetVRCContactReceiverParameters(avatar));
-            parameters = parameters.Concat(GetParameterNameAndTypesProvider(avatar));
 
             if (includeAnimators)
             {
@@ -183,12 +182,6 @@ namespace Narazaka.VRChat.AvatarParametersUtil
             return controller.parameters.Select(p => p.ToVRCExpressionParametersParameter());
         }
 #endif
-
-        public static IEnumerable<VRCExpressionParameters.Parameter> GetParameterNameAndTypesProvider(VRCAvatarDescriptor avatar)
-        {
-            var providers = avatar.GetAllComponentsInChildren<IParameterNameAndTypesProvider>();
-            return providers.SelectMany(provider => provider.GetParameterNameAndTypes());
-        }
 
 #if UNITY_EDITOR
         public static AnimatorControllerParameterType ToAnimatorControllerParameterType(this VRCExpressionParameters.ValueType valueType)

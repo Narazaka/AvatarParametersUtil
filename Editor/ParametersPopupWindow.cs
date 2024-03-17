@@ -1,26 +1,25 @@
+using nadena.dev.ndmf;
 using System;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
-using VRC.SDK3.Avatars.Components;
-using VRC.SDK3.Avatars.ScriptableObjects;
 
 namespace Narazaka.VRChat.AvatarParametersUtil.Editor
 {
     public class ParametersPopupWindow : PopupWindowContent
     {
         public Action<string> UpdateProperty;
-        VRCAvatarDescriptor Avatar;
-        VRCExpressionParameters.Parameter[] Parameters;
+        GameObject BaseObject;
+        ProvidedParameter[] Parameters;
         SearchField SearchField;
         string SearchQuery;
         bool IncludeAnimators;
         ParametersTreeView TreeView;
 
-        public ParametersPopupWindow(VRCAvatarDescriptor avatar)
+        public ParametersPopupWindow(GameObject baseObject)
         {
-            Avatar = avatar;
+            BaseObject = baseObject;
         }
 
         public override void OnGUI(Rect rect)
@@ -35,7 +34,7 @@ namespace Narazaka.VRChat.AvatarParametersUtil.Editor
             if (newIncludeAnimators != IncludeAnimators || Parameters == null)
             {
                 IncludeAnimators = newIncludeAnimators;
-                Parameters = AvatarParametersUtil.GetParameters(Avatar, IncludeAnimators).ToArray();
+                Parameters = ParameterInfo.ForUI.GetParametersForObject(BaseObject).ToArray();
                 TreeView = null;
             }
             rect.y += EditorGUIUtility.singleLineHeight;
@@ -46,11 +45,11 @@ namespace Narazaka.VRChat.AvatarParametersUtil.Editor
                 {
                     OnSelect = (parameter) =>
                     {
-                        if (UpdateProperty != null) UpdateProperty(parameter.name);
+                        if (UpdateProperty != null) UpdateProperty(parameter.EffectiveName);
                     },
                     OnCommit = (parameter) =>
                     {
-                        if (UpdateProperty != null) UpdateProperty(parameter.name);
+                        if (UpdateProperty != null) UpdateProperty(parameter.EffectiveName);
                         editorWindow.Close();
                     }
                 };

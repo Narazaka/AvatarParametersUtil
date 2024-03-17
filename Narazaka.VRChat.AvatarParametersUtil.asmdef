@@ -1,7 +1,9 @@
 {
     "name": "Narazaka.VRChat.AvatarParametersUtil",
+    "rootNamespace": "",
     "references": [
-        "nadena.dev.modular-avatar.core"
+        "nadena.dev.modular-avatar.core",
+        "nadena.dev.ndmf.vrchat"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

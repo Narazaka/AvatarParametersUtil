@@ -1,7 +1,9 @@
 {
     "name": "Narazaka.VRChat.AvatarParametersUtil.Editor",
+    "rootNamespace": "",
     "references": [
-        "Narazaka.VRChat.AvatarParametersUtil"
+        "Narazaka.VRChat.AvatarParametersUtil",
+        "nadena.dev.ndmf.vrchat"
     ],
     "includePlatforms": [
         "Editor"

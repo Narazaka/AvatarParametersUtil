@@ -1,10 +1,9 @@
+using nadena.dev.ndmf;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
-using UnityEngine;
-using VRC.SDK3.Avatars.ScriptableObjects;
 
 namespace Narazaka.VRChat.AvatarParametersUtil.Editor
 {
@@ -12,15 +11,15 @@ namespace Narazaka.VRChat.AvatarParametersUtil.Editor
     {
         class Item : TreeViewItem
         {
-            public VRCExpressionParameters.Parameter source;
+            public ProvidedParameter source;
         }
 
-        public Action<VRCExpressionParameters.Parameter> OnSelect;
-        public Action<VRCExpressionParameters.Parameter> OnCommit;
+        public Action<ProvidedParameter> OnSelect;
+        public Action<ProvidedParameter> OnCommit;
 
-        VRCExpressionParameters.Parameter[] Parameters;
+        ProvidedParameter[] Parameters;
 
-        public ParametersTreeView(TreeViewState state, VRCExpressionParameters.Parameter[] parameters) : base(state)
+        public ParametersTreeView(TreeViewState state, ProvidedParameter[] parameters) : base(state)
         {
             Parameters = parameters;
         }
@@ -28,7 +27,7 @@ namespace Narazaka.VRChat.AvatarParametersUtil.Editor
         protected override TreeViewItem BuildRoot()
         {
             var root = new TreeViewItem { id = -1, depth = -1, displayName = "Root" };
-            SetupParentsAndChildrenFromDepths(root, Parameters.Select((p, index) => new Item() { id = index, depth = 0, displayName = p.name, source = p } as TreeViewItem).ToList());
+            SetupParentsAndChildrenFromDepths(root, Parameters.Select((p, index) => new Item() { id = index, depth = 0, displayName = p.EffectiveName, source = p } as TreeViewItem).ToList());
             return root;
         }
 
@@ -38,7 +37,7 @@ namespace Narazaka.VRChat.AvatarParametersUtil.Editor
             {
                 var rect = args.rowRect;
                 rect.xMin += GetContentIndent(args.item) + extraSpaceBeforeIconAndLabel;
-                EditorGUI.LabelField(rect, source.source.name);
+                EditorGUI.LabelField(rect, source.source.EffectiveName);
             }
             else
             {

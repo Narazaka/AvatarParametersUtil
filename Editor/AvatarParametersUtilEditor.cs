@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEditor;
 using VRC.SDK3.Avatars.Components;
 using VRC.SDK3.Avatars.ScriptableObjects;
+using nadena.dev.ndmf;
 
 namespace Narazaka.VRChat.AvatarParametersUtil.Editor
 {
@@ -29,7 +30,7 @@ namespace Narazaka.VRChat.AvatarParametersUtil.Editor
         }
 
         public SerializedObject SerializedObject;
-        VRCExpressionParameters.Parameter[] ParametersCache;
+        ProvidedParameter[] ParametersCache;
         Dictionary<string, int> ParameterNameToIndexCache = new Dictionary<string, int>();
 
         public AvatarParametersUtilEditor(SerializedObject serializedObject)
@@ -65,12 +66,12 @@ namespace Narazaka.VRChat.AvatarParametersUtil.Editor
         public void ShowParameterValueField(Rect rect, string parameterName, SerializedProperty property, GUIContent label = null)
         {
             var parameter = GetParameter(parameterName);
-            if (parameter?.valueType == VRCExpressionParameters.ValueType.Bool)
+            if (parameter?.ParameterType == AnimatorControllerParameterType.Bool)
             {
                 var result = EditorGUI.Toggle(rect, label, property.floatValue >= 0.5f);
                 property.floatValue = result ? 1f : 0f;
             }
-            else if (parameter?.valueType == VRCExpressionParameters.ValueType.Int)
+            else if (parameter?.ParameterType == AnimatorControllerParameterType.Int)
             {
                 var result = EditorGUI.IntField(rect, label, Mathf.RoundToInt(property.floatValue));
                 property.floatValue = result;
@@ -84,10 +85,10 @@ namespace Narazaka.VRChat.AvatarParametersUtil.Editor
         void ShowParameterTypeField(Rect rect, string parameterName)
         {
             var parameter = GetParameter(parameterName);
-            EditorGUI.LabelField(rect, parameter == null ? "?" : parameter.valueType.ToString(), EditorStyles.centeredGreyMiniLabel);
+            EditorGUI.LabelField(rect, parameter == null ? "?" : parameter.ParameterType.ToString(), EditorStyles.centeredGreyMiniLabel);
         }
 
-        public VRCExpressionParameters.Parameter GetParameter(string name)
+        public ProvidedParameter GetParameter(string name)
         {
             if (ParameterNameToIndexCache.TryGetValue(name, out var index))
             {
@@ -99,13 +100,13 @@ namespace Narazaka.VRChat.AvatarParametersUtil.Editor
         void UpdateParametersCache()
         {
             var avatar = GetParentAvatar();
-            ParametersCache = AvatarParametersUtil.GetParameters(avatar, true).ToArray();
-            ParameterNameToIndexCache = ParametersCache.Select((p, index) => new { p.name, index }).ToDictionary(p => p.name, p => p.index);
+            ParametersCache = ParameterInfo.ForUI.GetParametersForObject(avatar).ToArray();
+            ParameterNameToIndexCache = ParametersCache.Select((p, index) => new { p.EffectiveName, index }).ToDictionary(p => p.EffectiveName, p => p.index);
         }
 
-        VRCAvatarDescriptor GetParentAvatar()
+        GameObject GetParentAvatar()
         {
-            return (SerializedObject.targetObject as Component)?.GetComponentInParent<VRCAvatarDescriptor>();
+            return (SerializedObject.targetObject as Component)?.GetComponentInParent<VRCAvatarDescriptor>()?.gameObject;
         }
     }
 }

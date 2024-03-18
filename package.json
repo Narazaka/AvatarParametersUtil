@@ -9,6 +9,9 @@
   },
   "license": "Zlib",
   "type": "tool",
-  "url" : "https://github.com/Narazaka/AvatarParametersUtil.git",
-  "unity": "2019.4"
+  "url": "https://github.com/Narazaka/AvatarParametersUtil.git",
+  "unity": "2019.4",
+  "vpmDependencies": {
+    "nadena.dev.ndmf": ">=1.4.0 <2.0.0-a"
+  }
 }

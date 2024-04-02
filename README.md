@@ -12,6 +12,8 @@ VRC Expressions Parameter Utility
 
 ## 更新履歴
 
+- 2.0.2
+  - ビルドの問題を修正
 - 2.0.1
   - NDMF Parameter Provider対応
 - 1.0.5

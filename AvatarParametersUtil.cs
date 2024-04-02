@@ -60,6 +60,7 @@ namespace Narazaka.VRChat.AvatarParametersUtil
         }
 
 #if AVATAR_PARAMETERS_UTIL_HAS_MA
+        [Obsolete("Use nmdf ParameterInfo")]
         public static IEnumerable<VRCExpressionParameters.Parameter> GetModularAvatarParameters(VRCAvatarDescriptor avatar)
         {
             var maParameters = avatar.GetAllComponentsInChildren<ModularAvatarParameters>();

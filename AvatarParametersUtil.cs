@@ -5,6 +5,8 @@ using VRC.SDK3.Avatars.Components;
 using VRC.SDK3.Avatars.ScriptableObjects;
 using VRC.SDK3.Dynamics.Contact.Components;
 using VRC.SDK3.Dynamics.PhysBone.Components;
+using System;
+using nadena.dev.ndmf;
 
 #if AVATAR_PARAMETERS_UTIL_HAS_MA
 using nadena.dev.modular_avatar.core;
@@ -27,6 +29,7 @@ namespace Narazaka.VRChat.AvatarParametersUtil
             }
         }
 
+        [Obsolete("Use nmdf ParameterInfo")]
         public static IEnumerable<VRCExpressionParameters.Parameter> GetParameters(VRCAvatarDescriptor avatar, bool includeAnimators = false)
         {
             var parameters = Enumerable.Empty<VRCExpressionParameters.Parameter>();
@@ -225,6 +228,15 @@ namespace Narazaka.VRChat.AvatarParametersUtil
                 defaultBool = parameter.valueType == VRCExpressionParameters.ValueType.Bool ? parameter.defaultValue > 0.5f : false,
                 defaultInt = parameter.valueType == VRCExpressionParameters.ValueType.Int ? (int)parameter.defaultValue : 0,
                 defaultFloat = parameter.valueType == VRCExpressionParameters.ValueType.Float ? parameter.defaultValue : 0f,
+            };
+        }
+
+        public static AnimatorControllerParameter ToAnimatorControllerParameter(this ProvidedParameter parameter)
+        {
+            return new AnimatorControllerParameter
+            {
+                name = parameter.EffectiveName,
+                type = parameter.ParameterType == null ? AnimatorControllerParameterType.Float : (AnimatorControllerParameterType)parameter.ParameterType,
             };
         }
 

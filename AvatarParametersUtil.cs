@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using VRC.SDK3.Avatars.Components;
@@ -153,6 +153,11 @@ namespace Narazaka.VRChat.AvatarParametersUtil
                 defaultValue = parameter.type == AnimatorControllerParameterType.Bool ? (parameter.defaultBool ? 1f : 0f) : parameter.type == AnimatorControllerParameterType.Int ? parameter.defaultInt : parameter.defaultFloat,
                 networkSynced = false,
             };
+        }
+
+        public static IEnumerable<ProvidedParameter> ToDistinctSubParameters(this IEnumerable<ProvidedParameter> parameters)
+        {
+            return parameters.SelectMany(p => p.SubParameters()).Distinct(new ProvidedParameterEffectiveNameComparator());
         }
 #endif
     }

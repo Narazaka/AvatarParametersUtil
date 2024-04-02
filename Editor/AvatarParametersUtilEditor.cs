@@ -100,7 +100,7 @@ namespace Narazaka.VRChat.AvatarParametersUtil.Editor
         void UpdateParametersCache()
         {
             var avatar = GetParentAvatar();
-            ParametersCache = ParameterInfo.ForUI.GetParametersForObject(avatar).SelectMany(p => p.SubParameters()).ToArray();
+            ParametersCache = ParameterInfo.ForUI.GetParametersForObject(avatar).ToDistinctSubParameters().ToArray();
             ParameterNameToIndexCache = ParametersCache.Select((p, index) => new { p.EffectiveName, index }).ToDictionary(p => p.EffectiveName, p => p.index);
         }
 

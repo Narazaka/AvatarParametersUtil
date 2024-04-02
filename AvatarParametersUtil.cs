@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using VRC.SDK3.Avatars.Components;
@@ -6,7 +6,9 @@ using VRC.SDK3.Avatars.ScriptableObjects;
 using VRC.SDK3.Dynamics.Contact.Components;
 using VRC.SDK3.Dynamics.PhysBone.Components;
 using System;
+#if UNITY_EDITOR
 using nadena.dev.ndmf;
+#endif
 
 namespace Narazaka.VRChat.AvatarParametersUtil
 {

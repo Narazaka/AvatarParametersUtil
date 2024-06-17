@@ -159,6 +159,11 @@ namespace Narazaka.VRChat.AvatarParametersUtil
         {
             return parameters.SelectMany(p => p.SubParameters()).Distinct(new ProvidedParameterEffectiveNameComparator());
         }
+
+        public static IEnumerable<ProvidedParameter> OnlyVisible(this IEnumerable<ProvidedParameter> parameters)
+        {
+            return parameters.Where(p => !p.IsHidden);
+        }
 #endif
     }
 }

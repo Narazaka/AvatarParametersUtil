@@ -34,7 +34,7 @@ namespace Narazaka.VRChat.AvatarParametersUtil.Editor
             if (newIncludeAnimators != IncludeAnimators || Parameters == null)
             {
                 IncludeAnimators = newIncludeAnimators;
-                Parameters = ParameterInfo.ForUI.GetParametersForObject(BaseObject).ToDistinctSubParameters().Where(p => p.ParameterType != null).ToArray();
+                Parameters = ParameterInfo.ForUI.GetParametersForObject(BaseObject).ToDistinctSubParameters().OnlyVisible().Where(p => p.ParameterType != null).ToArray();
                 TreeView = null;
             }
             rect.y += EditorGUIUtility.singleLineHeight;

@@ -12,6 +12,8 @@ VRC Expressions Parameter Utility
 
 ## 更新履歴
 
+- 2.0.4
+  - マニフェストにchangelogUrlを追加
 - 2.0.3
   - internal (内部値/自動リネーム) なパラメーターを表示しないように修正
 - 2.0.2

@@ -70,11 +70,13 @@ namespace Narazaka.VRChat.AvatarParametersUtil.Editor
             var parameter = GetParameter(parameterName);
             if (parameter?.ParameterType == AnimatorControllerParameterType.Bool)
             {
+                if (label == null) label = new GUIContent(property.displayName);
                 var result = EditorGUI.Toggle(rect, label, property.floatValue >= 0.5f);
                 property.floatValue = result ? 1f : 0f;
             }
             else if (parameter?.ParameterType == AnimatorControllerParameterType.Int)
             {
+                if (label == null) label = new GUIContent(property.displayName);
                 var result = EditorGUI.IntField(rect, label, Mathf.RoundToInt(property.floatValue));
                 property.floatValue = result;
             }

@@ -12,6 +12,8 @@ VRC Expressions Parameter Utility
 
 ## 更新履歴
 
+- 2.1.0
+  - `AvatarParametersUtilEditor.ShowParameterNameField`で表示するパラメーターをフィルター出来るように
 - 2.0.4
   - マニフェストにchangelogUrlを追加
 - 2.0.3

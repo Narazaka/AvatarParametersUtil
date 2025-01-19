@@ -39,7 +39,9 @@ namespace Narazaka.VRChat.AvatarParametersUtil.Editor
             UpdateParametersCache();
         }
 
-        public void ShowParameterNameField(Rect rect, SerializedProperty property, GUIContent label = null)
+        public void ShowParameterNameField(Rect rect, SerializedProperty property, GUIContent label = null) => ShowParameterNameField(rect, property, null, label);
+
+        public void ShowParameterNameField(Rect rect, SerializedProperty property, System.Func<ProvidedParameter, bool> filterParameter, GUIContent label = null)
         {
             rect.width -= EditorGUIUtility.singleLineHeight;
             EditorGUI.PropertyField(rect, property, label);
@@ -48,7 +50,7 @@ namespace Narazaka.VRChat.AvatarParametersUtil.Editor
             GUIStyle style = "IN DropDown";
             if (EditorGUI.DropdownButton(rect, GUIContent.none, FocusType.Keyboard, style))
             {
-                PopupWindow.Show(rect, new ParametersPopupWindow(GetParentAvatar())
+                PopupWindow.Show(rect, new ParametersPopupWindow(GetParentAvatar(), filterParameter)
                 {
                     UpdateProperty = (name) =>
                     {

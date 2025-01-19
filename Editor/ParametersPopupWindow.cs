@@ -11,6 +11,7 @@ namespace Narazaka.VRChat.AvatarParametersUtil.Editor
     {
         public Action<string> UpdateProperty;
         GameObject BaseObject;
+        Func<ProvidedParameter, bool> FilterParameter;
         ProvidedParameter[] Parameters;
         SearchField SearchField;
         string SearchQuery;
@@ -20,6 +21,12 @@ namespace Narazaka.VRChat.AvatarParametersUtil.Editor
         public ParametersPopupWindow(GameObject baseObject)
         {
             BaseObject = baseObject;
+        }
+
+        public ParametersPopupWindow(GameObject baseObject, Func<ProvidedParameter, bool> filterParameter)
+        {
+            BaseObject = baseObject;
+            FilterParameter = filterParameter;
         }
 
         public override void OnGUI(Rect rect)
@@ -34,7 +41,7 @@ namespace Narazaka.VRChat.AvatarParametersUtil.Editor
             if (newIncludeAnimators != IncludeAnimators || Parameters == null)
             {
                 IncludeAnimators = newIncludeAnimators;
-                Parameters = ParameterInfo.ForUI.GetParametersForObject(BaseObject).ToDistinctSubParameters().OnlyVisible().Where(p => p.ParameterType != null).ToArray();
+                Parameters = ParameterInfo.ForUI.GetParametersForObject(BaseObject).ToDistinctSubParameters().OnlyVisible().Where(p => p.ParameterType != null).Where(FilterParameter == null ? (p) => true : FilterParameter).ToArray();
                 TreeView = null;
             }
             rect.y += EditorGUIUtility.singleLineHeight;

@@ -164,6 +164,11 @@ namespace Narazaka.VRChat.AvatarParametersUtil
         {
             return parameters.Where(p => !p.IsHidden);
         }
+
+        public static IEnumerable<ProvidedParameter> NotEmpty(this IEnumerable<ProvidedParameter> parameters)
+        {
+            return parameters.Where(p => !string.IsNullOrEmpty(p.EffectiveName));
+        }
 #endif
     }
 }

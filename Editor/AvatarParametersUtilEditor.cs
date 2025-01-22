@@ -89,7 +89,11 @@ namespace Narazaka.VRChat.AvatarParametersUtil.Editor
         void ShowParameterTypeField(Rect rect, string parameterName)
         {
             var parameter = GetParameter(parameterName);
+            var indentLevel = EditorGUI.indentLevel;
+            EditorGUI.IndentedRect(rect);
+            EditorGUI.indentLevel = 0;
             EditorGUI.LabelField(rect, parameter == null ? "?" : parameter.ParameterType.ToString(), EditorStyles.centeredGreyMiniLabel);
+            EditorGUI.indentLevel = indentLevel;
         }
 
         public ProvidedParameter GetParameter(string name)

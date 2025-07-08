@@ -12,6 +12,8 @@ VRC Expressions Parameter Utility
 
 ## 更新履歴
 
+- 2.1.4
+  - null check
 - 2.1.3
   - indentLevelが0でない時に`AvatarParametersUtilEditor.ShowParameterNameField`で型名が出ない問題を修正
 - 2.1.2

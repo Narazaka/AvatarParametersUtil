@@ -10,7 +10,7 @@ namespace Narazaka.VRChat.AvatarParametersUtil
     {
         public bool Equals(ProvidedParameter x, ProvidedParameter y) => x.EffectiveName == y.EffectiveName;
 
-        public int GetHashCode(ProvidedParameter obj) => obj.EffectiveName.GetHashCode();
+        public int GetHashCode(ProvidedParameter obj) => obj.EffectiveName == null ? 0 : obj.EffectiveName.GetHashCode();
     }
 }
 #endif

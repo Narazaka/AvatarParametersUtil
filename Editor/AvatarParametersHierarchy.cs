@@ -33,8 +33,22 @@ namespace Narazaka.VRChat.AvatarParametersUtil.Editor
             if (path == null) return rootParameters;
 
             var nameMaps = path.Select(info.GetParameterRemappingsAt).ToList();
-            var renamesPerLevel = BuildRenamesPerLevel(nameMaps);
+            return RemapToHierarchyFromNameMaps(rootParameters, nameMaps);
+        }
 
+        /// <summary>
+        /// テスト・差し替え用: あらかじめ用意した path 上の nameMap 列を直接受け取って remap を行う純粋関数。
+        /// nameMaps[0] が avatarRoot、nameMaps[n-1] が hierarchyObject に対応する。
+        /// </summary>
+        internal static IEnumerable<ProvidedParameter> RemapToHierarchyFromNameMaps(
+            IEnumerable<ProvidedParameter> rootParameters,
+            IList<ImmutableDictionary<(ParameterNamespace, string), ParameterMapping>> nameMapsAlongPath)
+        {
+            if (nameMapsAlongPath == null || nameMapsAlongPath.Count <= 1)
+            {
+                return rootParameters;
+            }
+            var renamesPerLevel = BuildRenamesPerLevel(nameMapsAlongPath);
             return rootParameters.SelectMany(p => RemapToHierarchy(p, renamesPerLevel));
         }
 
@@ -54,8 +68,8 @@ namespace Narazaka.VRChat.AvatarParametersUtil.Editor
             return path;
         }
 
-        static List<List<(ParameterNamespace ns, string inner, string outer)>> BuildRenamesPerLevel(
-            List<ImmutableDictionary<(ParameterNamespace, string), ParameterMapping>> nameMaps)
+        internal static List<List<(ParameterNamespace ns, string inner, string outer)>> BuildRenamesPerLevel(
+            IList<ImmutableDictionary<(ParameterNamespace, string), ParameterMapping>> nameMaps)
         {
             var result = new List<List<(ParameterNamespace, string, string)>>(nameMaps.Count);
             result.Add(new List<(ParameterNamespace, string, string)>());

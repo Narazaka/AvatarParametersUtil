@@ -5,14 +5,36 @@ using UnityEditor;
 using VRC.SDK3.Avatars.Components;
 using VRC.SDK3.Avatars.ScriptableObjects;
 using nadena.dev.ndmf;
+using System;
 
 namespace Narazaka.VRChat.AvatarParametersUtil.Editor
 {
     public class AvatarParametersUtilEditor
     {
         static Dictionary<SerializedObject, AvatarParametersUtilEditor> Cache = new Dictionary<SerializedObject, AvatarParametersUtilEditor>();
+        static Dictionary<SerializedObject, AvatarParametersUtilEditor> HierarchalCache = new Dictionary<SerializedObject, AvatarParametersUtilEditor>();
 
-        public static AvatarParametersUtilEditor Get(SerializedObject serializedObject, bool forceUpdate = false)
+        public static AvatarParametersUtilEditor GetForHierarchy(SerializedObject serializedObject, bool forceUpdate = false)
+        {
+            if (HierarchalCache.TryGetValue(serializedObject, out var parameterUtil) && parameterUtil != null)
+            {
+                if (forceUpdate)
+                {
+                    parameterUtil.UpdateParametersCache();
+                }
+            }
+            else
+            {
+                parameterUtil = new AvatarParametersUtilEditor(serializedObject, true);
+                HierarchalCache.Add(serializedObject, parameterUtil);
+            }
+            return parameterUtil;
+        }
+
+        [Obsolete("Use GetForAvatarRoot (or update to GetForHierarchy) instead.")]
+        public static AvatarParametersUtilEditor Get(SerializedObject serializedObject, bool forceUpdate = false) => GetForAvatarRoot(serializedObject, forceUpdate);
+
+        public static AvatarParametersUtilEditor GetForAvatarRoot(SerializedObject serializedObject, bool forceUpdate = false)
         {
             if (Cache.TryGetValue(serializedObject, out var parameterUtil) && parameterUtil != null)
             {
@@ -23,18 +45,25 @@ namespace Narazaka.VRChat.AvatarParametersUtil.Editor
             }
             else
             {
-                parameterUtil = new AvatarParametersUtilEditor(serializedObject);
+                parameterUtil = new AvatarParametersUtilEditor(serializedObject, false);
                 Cache.Add(serializedObject, parameterUtil);
             }
             return parameterUtil;
         }
 
+        public bool ForHierarchy;
         public SerializedObject SerializedObject;
         ProvidedParameter[] ParametersCache;
         Dictionary<string, int> ParameterNameToIndexCache = new Dictionary<string, int>();
 
-        public AvatarParametersUtilEditor(SerializedObject serializedObject)
+        [Obsolete("Use AvatarParametersUtilEditor(SerializedObject, bool) instead.")]
+        public AvatarParametersUtilEditor(SerializedObject serializedObject) : this(serializedObject, false) { }
+
+        /// <param name="serializedObject">target</param>
+        /// <param name="forHierarchy">if true, the editor will operate on the hierarchy level instead of the avatar root.</param>
+        public AvatarParametersUtilEditor(SerializedObject serializedObject, bool forHierarchy)
         {
+            ForHierarchy = forHierarchy;
             SerializedObject = serializedObject;
             UpdateParametersCache();
         }
@@ -50,7 +79,9 @@ namespace Narazaka.VRChat.AvatarParametersUtil.Editor
             GUIStyle style = "IN DropDown";
             if (EditorGUI.DropdownButton(rect, GUIContent.none, FocusType.Keyboard, style))
             {
-                PopupWindow.Show(rect, new ParametersPopupWindow(GetParentAvatar(), filterParameter)
+                var avatarRoot = GetParentAvatar();
+                var hierarchyObject = ForHierarchy ? (SerializedObject.targetObject as Component)?.gameObject : null;
+                PopupWindow.Show(rect, new ParametersPopupWindow(avatarRoot, hierarchyObject, filterParameter)
                 {
                     UpdateProperty = (name) =>
                     {
@@ -108,7 +139,21 @@ namespace Narazaka.VRChat.AvatarParametersUtil.Editor
         void UpdateParametersCache()
         {
             var avatar = GetParentAvatar();
-            ParametersCache = avatar == null ? new ProvidedParameter[0] : ParameterInfo.ForUI.GetParametersForObject(avatar).ToDistinctSubParameters().NotEmpty().OnlyVisible().ToArray();
+            if (avatar == null)
+            {
+                ParametersCache = new ProvidedParameter[0];
+            }
+            else if (ForHierarchy)
+            {
+                var hierarchyObject = (SerializedObject.targetObject as Component)?.gameObject;
+                ParametersCache = hierarchyObject == null
+                    ? new ProvidedParameter[0]
+                    : AvatarParametersHierarchy.GetParametersAtHierarchy(ParameterInfo.ForUI, avatar, hierarchyObject).ToDistinctSubParameters().NotEmpty().OnlyVisible().ToArray();
+            }
+            else
+            {
+                ParametersCache = ParameterInfo.ForUI.GetParametersForObject(avatar).ToDistinctSubParameters().NotEmpty().OnlyVisible().ToArray();
+            }
             ParameterNameToIndexCache = ParametersCache.Select((p, index) => new { p.EffectiveName, index }).ToDictionary(p => p.EffectiveName, p => p.index);
         }
 

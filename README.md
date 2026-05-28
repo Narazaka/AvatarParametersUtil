@@ -12,6 +12,8 @@ VRC Expressions Parameter Utility
 
 ## 更新履歴
 
+- 2.2.0
+  - GameObject階層ごとのパラメーター（リネーム）に対応
 - 2.1.4
   - null check
 - 2.1.3

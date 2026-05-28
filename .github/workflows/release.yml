@@ -1,10 +1,10 @@
 name: Build Release
 
-on: 
+on:
   workflow_dispatch:
   push:
     tags:
-      - 'v*'
+      - "v*"
 
 permissions:
   contents: write
@@ -15,3 +15,6 @@ jobs:
     with:
       ma: true
       novcc: false
+      exclude: |
+        Tests
+        Tests.meta

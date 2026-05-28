@@ -35,7 +35,7 @@ namespace Narazaka.VRChat.AvatarParametersUtil.Editor
             var nameMaps = path.Select(info.GetParameterRemappingsAt).ToList();
             var renamesPerLevel = BuildRenamesPerLevel(nameMaps);
 
-            return rootParameters.Select(p => RemapToHierarchy(p, renamesPerLevel));
+            return rootParameters.SelectMany(p => RemapToHierarchy(p, renamesPerLevel));
         }
 
         static List<GameObject> BuildPath(GameObject root, GameObject leaf)
@@ -91,29 +91,72 @@ namespace Narazaka.VRChat.AvatarParametersUtil.Editor
             return result;
         }
 
-        static ProvidedParameter RemapToHierarchy(
+        // 1つの root-level パラメーターから、hierarchyObject 視点でアクセス可能な「全ての」名前を列挙する。
+        // MA Parameters の rename は片方向 lookup (inner→outer の一回だけ) なので、リネーム chain 上の
+        // 全ての名前（inner名、outer名、chain中間名）が等しく同じパラメーターを駆動できる。
+        // shadowing (この hierarchy 名を書くと別パラメーターに化ける) を round-trip で除外。
+        static IEnumerable<ProvidedParameter> RemapToHierarchy(
             ProvidedParameter source,
             List<List<(ParameterNamespace ns, string inner, string outer)>> renamesPerLevel)
         {
-            var currentName = source.EffectiveName;
             var ns = source.Namespace;
-            var changed = false;
+            var rootName = source.EffectiveName;
+
+            // 集合展開: ルートからdriverGoに向かって下りつつ、その時点までの集合に含まれる outer に対応する
+            // inner を新規候補として追加していく。これがアクセス可能な hierarchy 名候補の上界。
+            var candidates = new HashSet<string> { rootName };
             for (var i = 1; i < renamesPerLevel.Count; i++)
             {
+                var snapshot = new List<string>(candidates);
                 foreach (var rename in renamesPerLevel[i])
                 {
-                    if (rename.ns == ns && currentName == rename.outer)
+                    if (rename.ns != ns) continue;
+                    if (snapshot.Contains(rename.outer))
                     {
-                        currentName = rename.inner;
-                        changed = true;
+                        candidates.Add(rename.inner);
+                    }
+                }
+            }
+
+            foreach (var candidate in candidates)
+            {
+                if (!RoundTripsToRoot(candidate, rootName, ns, renamesPerLevel)) continue;
+
+                if (candidate == rootName)
+                {
+                    yield return source;
+                }
+                else
+                {
+                    var clone = source.Clone();
+                    clone.EffectiveName = candidate;
+                    yield return clone;
+                }
+            }
+        }
+
+        // 階層名を driverGo→root 方向に MA Parameters 適用相当のwalkで戻したとき、元のルート名に一致するか。
+        // 一致 = この hierarchy 名で実際にそのパラメーターを駆動できる
+        // 不一致 = shadowing で別パラメーターに化けるためアクセス不可
+        static bool RoundTripsToRoot(
+            string hierarchyName,
+            string rootName,
+            ParameterNamespace ns,
+            List<List<(ParameterNamespace ns, string inner, string outer)>> renamesPerLevel)
+        {
+            var forwardName = hierarchyName;
+            for (var k = renamesPerLevel.Count - 1; k >= 1; k--)
+            {
+                foreach (var rename in renamesPerLevel[k])
+                {
+                    if (rename.ns == ns && forwardName == rename.inner)
+                    {
+                        forwardName = rename.outer;
                         break;
                     }
                 }
             }
-            if (!changed) return source;
-            var clone = source.Clone();
-            clone.EffectiveName = currentName;
-            return clone;
+            return forwardName == rootName;
         }
     }
 }
